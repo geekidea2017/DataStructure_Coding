@@ -1518,7 +1518,119 @@
         
         By following these steps, you can effectively integrate and manage third-party REST APIs within your Spring Boot microservices architecture, ensuring your application remains reliable, performant, and secure.
 
-****18.	CHUBB INTERVIEW PREPARATION****
+**18. how to Implement retries mechanisim in spring boot**
+
+        To implement a retry mechanism in Spring Boot, you can use the Spring Retry library. This library provides declarative support to retry failed operations and a fallback mechanism if all attempts fail. Here’s a step-by-step guide:
+        
+        Step 1: Add Dependencies
+        First, add the necessary dependencies to your pom.xml:
+        
+        XML
+        
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.retry</groupId>
+                <artifactId>spring-retry</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aspects</artifactId>
+            </dependency>
+        </dependencies>
+        AI-generated code. Review and use carefully. More info on FAQ.
+        Step 2: Enable Spring Retry
+        Enable Spring Retry in your Spring Boot application by adding the @EnableRetry annotation to a configuration class:
+        
+        Java
+        
+        import org.springframework.context.annotation.Configuration;
+        import org.springframework.retry.annotation.EnableRetry;
+        
+        @Configuration
+        @EnableRetry
+        public class RetryConfig {
+        }
+        AI-generated code. Review and use carefully. More info on FAQ.
+        Step 3: Annotate Methods with @Retryable
+        Use the @Retryable annotation to specify the retry logic for a method. For example:
+        
+        Java
+        
+        import org.springframework.retry.annotation.Backoff;
+        import org.springframework.retry.annotation.Retryable;
+        import org.springframework.stereotype.Service;
+        
+        @Service
+        public class MyService {
+        
+            @Retryable(
+                value = { RemoteServiceNotAvailableException.class },
+                maxAttempts = 3,
+                backoff = @Backoff(delay = 2000)
+            )
+            public String callRemoteService() {
+                // Logic to call remote service
+                // This method will be retried up to 3 times with a 2-second delay between attempts
+                return "Service Response";
+            }
+        }
+        AI-generated code. Review and use carefully. More info on FAQ.
+        Step 4: Handle Fallback with @Recover
+        Use the @Recover annotation to define a fallback method if all retry attempts fail:
+        
+        Java
+        
+        import org.springframework.retry.annotation.Recover;
+        import org.springframework.stereotype.Service;
+        
+        @Service
+        public class MyService {
+        
+            @Retryable(
+                value = { RemoteServiceNotAvailableException.class },
+                maxAttempts = 3,
+                backoff = @Backoff(delay = 2000)
+            )
+            public String callRemoteService() {
+                // Logic to call remote service
+                return "Service Response";
+            }
+        
+            @Recover
+            public String recover(RemoteServiceNotAvailableException e) {
+                // Fallback logic
+                return "Fallback Response";
+            }
+        }
+        AI-generated code. Review and use carefully. More info on FAQ.
+        Example Usage
+        Here’s how you can use the service in a controller:
+        
+        Java
+        
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.web.bind.annotation.GetMapping;
+        import org.springframework.web.bind.annotation.RestController;
+        
+        @RestController
+        public class MyController {
+        
+            @Autowired
+            private MyService myService;
+        
+            @GetMapping("/callService")
+            public String callService() {
+                return myService.callRemoteService();
+            }
+        }
+        AI-generated code. Review and use carefully. More info on FAQ.
+        Summary
+        Add Dependencies: Include spring-retry and spring-aspects in your pom.xml.
+        Enable Retry: Use @EnableRetry in a configuration class.
+        Annotate Methods: Use @Retryable to specify retry logic and @Recover for fallback methods.
+        
+
+****19.	CHUBB INTERVIEW PREPARATION****
         
         ### **1. Core Java:**
         
@@ -1616,3 +1728,272 @@
         - **Review Past Projects:** Be ready to discuss your past projects in detail, focusing on your role, technologies used, and the impact of your contributions.
         
         By preparing answers with specific examples and a focus on your strengths, you can effectively demonstrate your qualifications and experience for the Integration Engineer role at Chubb.
+
+****20.	How JWT workes internally in springboot****
+        
+        JSON Web Tokens (JWT) are a popular way to handle authentication and authorization in Spring Boot applications. Here's a high-level overview of how JWT works internally in a Spring Boot application:
+        
+        ### 1. **User Authentication**
+        
+        When a user logs in with their credentials (username and password), the server authenticates these credentials. If they are valid, the server generates a JWT.
+        
+        ### 2. **JWT Generation**
+        
+        The JWT is created using a secret key and contains three parts:
+        - **Header**: Specifies the algorithm used to generate the signature (e.g., HMAC SHA256).
+        - **Payload**: Contains the claims, which are statements about an entity (typically, the user) and additional data. Common claims include `sub` (subject), `exp` (expiration time), and `roles`.
+        - **Signature**: Ensures that the token hasn't been altered. It's created by encoding the header and payload, then signing them using the secret key.
+        
+        ### 3. **Token Structure**
+        
+        A JWT looks like this: `header.payload.signature`, where each part is Base64Url encoded.
+        
+        ### 4. **Token Storage**
+        
+        The generated JWT is sent back to the client, typically in the response body or as a cookie. The client stores this token, usually in local storage or a cookie.
+        
+        ### 5. **Authorization**
+        
+        For subsequent requests, the client includes the JWT in the `Authorization` header as a Bearer token: `Authorization: Bearer <token>`.
+        
+        ### 6. **Token Validation**
+        
+        When the server receives a request with a JWT, it performs the following steps:
+        - **Extracts the token** from the `Authorization` header.
+        - **Validates the token** by checking the signature and ensuring it hasn't expired.
+        - **Extracts the claims** from the token to identify the user and their roles.
+        
+        ### 7. **Security Configuration**
+        
+        In Spring Boot, you configure JWT authentication using Spring Security. Here's a simplified example:
+        
+        #### Dependencies
+        
+        Add the necessary dependencies in your `pom.xml`:
+        
+        ```xml
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        ```
+        
+        #### Security Configuration
+        
+        Create a security configuration class:
+        
+        ```java
+        import org.springframework.context.annotation.Bean;
+        import org.springframework.context.annotation.Configuration;
+        import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+        import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+        import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+        import org.springframework.security.config.http.SessionCreationPolicy;
+        import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+        
+        @Configuration
+        @EnableWebSecurity
+        public class SecurityConfig extends WebSecurityConfigurerAdapter {
+        
+            @Override
+            protected void configure(HttpSecurity http) throws Exception {
+                http.csrf().disable()
+                    .authorizeRequests()
+                    .antMatchers("/api/auth/**").permitAll()
+                    .anyRequest().authenticated()
+                    .and()
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        
+                http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+            }
+        
+            @Bean
+            public JwtAuthenticationFilter jwtAuthenticationFilter() {
+                return new JwtAuthenticationFilter();
+            }
+        }
+        ```
+        
+        #### JWT Utility Class
+        
+        Create a utility class for generating and validating JWTs:
+        
+        ```java
+        import io.jsonwebtoken.Claims;
+        import io.jsonwebtoken.Jwts;
+        import io.jsonwebtoken.SignatureAlgorithm;
+        import org.springframework.stereotype.Component;
+        
+        import java.util.Date;
+        
+        @Component
+        public class JwtUtil {
+        
+            private String secret = "your_secret_key";
+        
+            public String generateToken(String username) {
+                return Jwts.builder()
+                        .setSubject(username)
+                        .setIssuedAt(new Date())
+                        .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
+                        .signWith(SignatureAlgorithm.HS256, secret)
+                        .compact();
+            }
+        
+            public Claims extractClaims(String token) {
+                return Jwts.parser()
+                        .setSigningKey(secret)
+                        .parseClaimsJws(token)
+                        .getBody();
+            }
+        
+            public boolean validateToken(String token, String username) {
+                return username.equals(extractClaims(token).getSubject()) && !isTokenExpired(token);
+            }
+        
+            private boolean isTokenExpired(String token) {
+                return extractClaims(token).getExpiration().before(new Date());
+            }
+        }
+        ```
+****21.	Service discovery complete explanations****
+
+        Service discovery complete explanations
+        
+        
+****22. SOLID Principle.****     
+    
+        The SOLID principles are five design principles intended to make software designs more understandable, flexible, and maintainable:
+        
+        S - Single Responsibility Principle (SRP): A class should have one, and only one, reason to change. This means a class should have only one job or responsibility.
+        
+        O - Open/Closed Principle (OCP): Software entities should be open for extension but closed for modification. This means you should be able to add new functionality without changing existing code.
+        
+        L - Liskov Substitution Principle (LSP): Subtypes must be substitutable for their base types without altering the correctness of the program. Essentially, derived classes must be usable through their base class interface without the need for the client to know the difference.
+        
+        I - Interface Segregation Principle (ISP): Clients should not be forced to depend on interfaces they do not use. This means that interfaces should be small and specific rather than large and general-purpose.
+        
+        D - Dependency Inversion Principle (DIP): High-level modules should not depend on low-level modules, but both should depend on abstractions. Additionally, abstractions should not depend on details; details should depend on abstractions.   
+ 
+****23. ACID Property.****
+
+        The ACID properties ensure reliable processing in a database. Here's a breakdown with examples:
+        
+        Atomicity: This means that a transaction is all or nothing. If one part fails, the entire transaction fails and the database state is left unchanged.
+        
+        Example: When transferring money between two accounts, either both debit and credit actions complete successfully, or neither action occurs.
+        
+        Consistency: This ensures that a transaction brings the database from one valid state to another, maintaining database invariants.
+        
+        Example: A transaction that ensures account balances are updated correctly so the total balance before and after the transaction remains the same.
+        
+        Isolation: This property ensures that transactions occur independently without interference. The intermediate state of a transaction is invisible to other transactions.
+        
+        Example: If two transactions are occurring simultaneously, one booking a flight and another reserving a seat, neither transaction sees the half-completed state of the other.
+        
+        Durability: Once a transaction is committed, it remains so, even in the event of a system failure.
+        
+        Example: After completing a booking transaction, the seat remains reserved even if there is a system crash immediately afterward.   
+        
+****24. Singleton class****
+
+        public class Singleton {
+            // Static variable to hold the single instance
+            private static Singleton singleInstance;
+        
+            // Private constructor to prevent instantiation
+            private Singleton() {}
+        
+            // Public method to provide access to the instance
+            public static Singleton getInstance() {
+                if (singleInstance == null) {
+                    synchronized (Singleton.class) {
+                        if (singleInstance == null) {
+                            singleInstance = new Singleton();
+                        }
+                    }
+                }
+                return singleInstance;
+            }
+        
+            public void showMessage() {
+                System.out.println("Hello from Singleton!");
+            }
+        
+            public static void main(String[] args) {
+                Singleton instance = Singleton.getInstance();
+                instance.showMessage();
+            }
+        }
+     
+ ****25. Immutable class create**** 
+ 
+        public final class ImmutableClass {
+            private final String name;
+            private final int age;
+        
+            public ImmutableClass(String name, int age) {
+                this.name = name;
+                this.age = age;
+            }
+        
+            public String getName() {
+                return name;
+            }
+        
+            public int getAge() {
+                return age;
+            }
+        
+            public static void main(String[] args) {
+                ImmutableClass obj = new ImmutableClass("Alice", 30);
+                System.out.println("Name: " + obj.getName());
+                System.out.println("Age: " + obj.getAge());
+            }
+        }
+    
+ ****26. Equal and hashcode Contract ?****
+ 
+        You
+        Equal and hashcode contract ?
+        Copilot
+        In Java, the equals() and hashCode() methods have a special relationship, often referred to as the equals-hashCode contract. Here are the key points:
+        
+        Consistency: If two objects are equal according to the equals() method, they must have the same hash code.
+        
+        Equal Objects: If obj1.equals(obj2) is true, then obj1.hashCode() == obj2.hashCode() must always be true.
+        
+        Non-Equal Objects: If obj1.equals(obj2) is false, obj1.hashCode() == obj2.hashCode() can be either true or false.
+        
+        Here's an example of how to correctly override these methods:
+        
+        java
+        
+        Copy
+        public class Person {
+            private String name;
+            private int age;
+        
+            public Person(String name, int age) {
+                this.name = name;
+                this.age = age;
+            }
+        
+            @Override
+            public boolean equals(Object obj) {
+                if (this == obj) return true;
+                if (obj == null || getClass() != obj.getClass()) return false;
+                Person person = (Person) obj;
+                return age == person.age && Objects.equals(name, person.name);
+            }
+        
+            @Override
+            public int hashCode() {
+                return Objects.hash(name, age);
+            }
+        }

@@ -1,3 +1,5 @@
+package com.interview.questions;
+
 import java.util.concurrent.CountDownLatch;
 
 class HorseRace {
