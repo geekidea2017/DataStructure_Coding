@@ -66,6 +66,7 @@
         public class SecondaryDatabaseConfig {
             // Define secondary database configuration
         }
+	
         
         Create JPA Repositories:
         Create separate JPA repositories for each database.
