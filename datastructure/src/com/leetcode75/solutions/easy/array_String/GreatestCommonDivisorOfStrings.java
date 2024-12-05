@@ -1,4 +1,4 @@
-package com.leetcode75.solutions.easy;
+package com.leetcode75.solutions.easy.array_String;
 /*
 * 1071. Greatest Common Divisor of Strings
 *
@@ -33,6 +33,34 @@ import java.util.Set;
 
 public class GreatestCommonDivisorOfStrings {
 
+    public static String gcdOfStrings3(String str1, String str2) {
+        if (!(str1 + str2).equals(str2 + str1)) {
+            return "";
+        }
+        int a = str1.length();
+        int b = str2.length();
+        int c = a-b;
+        return str1.substring(0,c);
+    }
+
+    public static String gcdOfStrings2(String str1, String str2) {
+        if (!(str1 + str2).equals(str2 + str1)) {
+            return "";
+        }
+
+        int a = str1.length();
+        int b = str2.length();
+
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+
+        return str2.substring(0, a);
+    }
+
+
     public static String gcdOfStrings(String str1, String str2) {
         if(str2.length()>str1.length()){
             return gcdOfStrings(str2,str1);
@@ -51,23 +79,40 @@ public class GreatestCommonDivisorOfStrings {
         String str1 = "LEET";
         String str2 = "CODE";
         System.out.println(gcdOfStrings(str1,str2));
+        System.out.println(gcdOfStrings2(str1,str2));
+        System.out.println(gcdOfStrings3(str1,str2));
 
-        str1 = "ABABAB";
+        System.out.println("----------------------------------------------------------");
+
+        str1 = "ABABABAB";
         str2 = "ABAB";
         System.out.println(gcdOfStrings(str1,str2));
+        System.out.println(gcdOfStrings2(str1,str2));
+        System.out.println(gcdOfStrings3(str1,str2));
+
+        System.out.println("----------------------------------------------------------");
 
 
         str1 = "ABCABC";
         str2 = "ABC";
         System.out.println(gcdOfStrings(str1,str2));
+        System.out.println(gcdOfStrings2(str1,str2));
+        System.out.println(gcdOfStrings3(str1,str2));
+
+        System.out.println("----------------------------------------------------------");
 
         str1 = "ABCDEF";
         str2 = "ABC";
         System.out.println(gcdOfStrings(str1,str2));
+        System.out.println(gcdOfStrings2(str1,str2));
+        System.out.println(gcdOfStrings3(str1,str2));
 
+        System.out.println("----------------------------------------------------------");
 
         str1 = "TAUXXTAUXXTAUXXTAUXXTAUXX";
         str2 = "TAUXXTAUXXTAUXXTAUXXTAUXXTAUXXTAUXXTAUXXTAUXX";
         System.out.println(gcdOfStrings(str1,str2));
+        System.out.println(gcdOfStrings2(str1,str2));
+        System.out.println(gcdOfStrings3(str1,str2));
     }
 }

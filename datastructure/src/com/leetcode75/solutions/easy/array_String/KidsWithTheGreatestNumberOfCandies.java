@@ -1,4 +1,4 @@
-package com.leetcode75.solutions.easy;
+package com.leetcode75.solutions.easy.array_String;
 
 import java.util.*;
 
@@ -64,6 +64,20 @@ public class KidsWithTheGreatestNumberOfCandies {
             }
         }
 
+
+        return maxValue == 0 ? new ArrayList() : list;
+    }
+
+    // Java 8 Stream implementation
+
+    public static List<Boolean> kidsWithCandies1(int[] candies, int extraCandies) {
+        List<Boolean> list = new ArrayList<Boolean>();
+        int maxValue = 0;
+
+        maxValue = Arrays.stream(candies).max().getAsInt();
+
+        int finalMaxValue = maxValue;
+        
 
         return maxValue == 0 ? new ArrayList() : list;
     }

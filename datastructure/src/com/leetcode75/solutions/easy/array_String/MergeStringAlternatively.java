@@ -1,4 +1,4 @@
-package com.leetcode75.solutions.easy;
+package com.leetcode75.solutions.easy.array_String;
 
 /*
 
